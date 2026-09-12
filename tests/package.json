@@ -1,0 +1,18 @@
+{
+  "name": "@alcatraz/tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "private": "true",
+  "devDependencies": {
+    "@alcatraz/contracts": "workspace:^",
+    "@alcatraz/reasoning": "workspace:^",
+    "vitest": "^5.0.0"
+  }
+}

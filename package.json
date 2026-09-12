@@ -1,0 +1,15 @@
+{
+  "name": "alcatraz-ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-first, evidence-backed cross-source verification.",
+  "scripts": {
+    "build:contracts": "apps/desktop/node_modules/.bin/tsc -p packages/contracts/tsconfig.json",
+    "build:reasoning": "apps/desktop/node_modules/.bin/tsc -p packages/reasoning/tsconfig.json",
+    "test:reasoning": "apps/desktop/node_modules/.bin/tsc -p packages/contracts/tsconfig.json && apps/desktop/node_modules/.bin/tsc -p packages/reasoning/tsconfig.json && node --test packages/reasoning/tests/*.test.mjs",
+    "test": "pnpm run test:reasoning"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
