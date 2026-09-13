@@ -8,7 +8,7 @@ import { CheckCircle } from 'lucide-react';
 // @ts-ignore
 import { demo1ApplicationFacts, demo2PaymentFacts, demo3PhishingFacts } from '../../../../demo/synthetic_data.ts';
 
-export function AnalyzeScreen({ scenario }: { scenario: string }) {
+export function AnalyzeScreen({ scenario, isCloud }: { scenario: string, isCloud: boolean }) {
   const [state, setState] = useState<AnalysisState>('idle');
   const [facts, setFacts] = useState<Fact[]>([]);
   const [findings, setFindings] = useState<Finding[]>([]);
@@ -49,7 +49,12 @@ export function AnalyzeScreen({ scenario }: { scenario: string }) {
   return (
     <div className="p-8 max-w-4xl mx-auto animate-in fade-in duration-300">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Analysis</h1>
+        <div className="flex items-center gap-4">
+          <h1 className="text-2xl font-bold text-gray-900">Analysis</h1>
+          <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full ${isCloud ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'}`}>
+            {isCloud ? 'Cloud Processing' : 'Local / On-Device (Privacy Safe)'}
+          </span>
+        </div>
         {scenario !== 'blank' && (
           <span className="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-bold uppercase tracking-wider rounded-full">
             Synthetic Demo Data

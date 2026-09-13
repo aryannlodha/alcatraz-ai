@@ -16,12 +16,12 @@ export default function App() {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard': return <DashboardPage onNavigate={setActiveTab} />;
-      case 'analyze': return <AnalyzeScreen scenario="blank" />;
+      case 'analyze': return <AnalyzeScreen scenario="blank" isCloud={isCloud} />;
+      case 'demo1': return <AnalyzeScreen scenario="demo1" isCloud={isCloud} />;
+      case 'demo2': return <AnalyzeScreen scenario="demo2" isCloud={isCloud} />;
+      case 'demo3': return <AnalyzeScreen scenario="demo3" isCloud={isCloud} />;
       case 'upload': return <UploadScreen onAnalyze={() => setActiveTab('analyze')} />;
       case 'paste': return <PasteScreen onAnalyze={() => setActiveTab('analyze')} />;
-      case 'demo1': return <AnalyzeScreen scenario="demo1" />;
-      case 'demo2': return <AnalyzeScreen scenario="demo2" />;
-      case 'demo3': return <AnalyzeScreen scenario="demo3" />;
       case 'settings': return <SettingsPage isCloud={isCloud} setIsCloud={setIsCloud} />;
       case 'benchmarks': return (
         <div className="p-8 max-w-5xl mx-auto"><h1 className="text-2xl font-bold mb-6">Benchmarks</h1>
