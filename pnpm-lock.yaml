@@ -118,6 +118,9 @@ importers:
       '@alcatraz/contracts':
         specifier: workspace:^
         version: link:../../packages/contracts
+      '@alcatraz/reasoning':
+        specifier: workspace:^
+        version: link:../../packages/reasoning
       onnxruntime-node:
         specifier: ^1.29.0
         version: 1.29.0

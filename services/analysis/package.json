@@ -12,6 +12,7 @@
   "types": "dist/index.d.ts",
   "dependencies": {
     "@alcatraz/contracts": "workspace:^",
+    "@alcatraz/reasoning": "workspace:^",
     "onnxruntime-node": "^1.29.0",
     "pdfjs-dist": "^6.3.289",
     "tesseract.js": "^7.0.0"
