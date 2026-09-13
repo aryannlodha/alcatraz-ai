@@ -27,6 +27,7 @@ export function PasteScreen({ onAnalyze }: { onAnalyze: (sources: Source[]) => v
       name: 'Pasted Information',
       type: 'text',
       isSynthetic: false,
+      content: text,
     };
     
     onAnalyze([source]);

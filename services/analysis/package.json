@@ -11,7 +11,9 @@
   "license": "ISC",
   "types": "dist/index.d.ts",
   "dependencies": {
-    "@alcatraz/contracts": "workspace:^"
+    "@alcatraz/contracts": "workspace:^",
+    "pdfjs-dist": "^6.3.289",
+    "tesseract.js": "^7.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.20.2",

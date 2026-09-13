@@ -11,6 +11,7 @@ export const SourceSchema = z.object({
   name: z.string(),
   type: SourceTypeSchema,
   isSynthetic: z.boolean().default(false),
+  content: z.string().optional(),
 });
 export type Source = z.infer<typeof SourceSchema>;
 

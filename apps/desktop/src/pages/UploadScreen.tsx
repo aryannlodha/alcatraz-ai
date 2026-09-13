@@ -11,7 +11,7 @@ export function UploadScreen({ onAnalyze }: { onAnalyze: (sources: Source[]) => 
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFiles = (files: FileList | null) => {
+  const handleFiles = async (files: FileList | null) => {
     setError(null);
     if (!files) return;
     
@@ -29,11 +29,27 @@ export function UploadScreen({ onAnalyze }: { onAnalyze: (sources: Source[]) => 
         continue;
       }
       
+      const type = file.type.includes('pdf') ? 'pdf' : file.type.includes('image') ? 'image' : 'text';
+      
+      // Read content
+      let content = '';
+      if (type === 'text') {
+        content = await file.text();
+      } else {
+        // Read as Data URL for OCR/PDF processing
+        content = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target?.result as string);
+          reader.readAsDataURL(file);
+        });
+      }
+
       newSources.push({
         id: `src_${Date.now()}_${Math.random().toString(36).substring(2)}`,
         name: file.name,
-        type: file.type.includes('pdf') ? 'pdf' : file.type.includes('image') ? 'image' : 'text',
-        isSynthetic: false
+        type,
+        isSynthetic: false,
+        content
       });
     }
     
