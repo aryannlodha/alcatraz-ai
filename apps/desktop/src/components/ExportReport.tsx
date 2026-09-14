@@ -131,7 +131,7 @@ export function ExportButton({ scenario, facts, findings }: { scenario: string; 
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       
       pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save(\`alcatraz-report-\${Date.now()}.pdf\`);
+      pdf.save(`alcatraz-report-${Date.now()}.pdf`);
       
     } catch (err) {
       console.error('Failed to generate PDF', err);

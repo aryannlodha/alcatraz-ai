@@ -1,7 +1,7 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import { Camera, RefreshCw, Check, Zap } from 'lucide-react';
-import { AnalysisState } from './AnalyzeScreen';
+import { AnalysisState } from '../components/AnalysisProgress';
 
 export function CameraScanner({ onCapture }: { onCapture: (imageSrc: string) => void }) {
   const webcamRef = useRef<Webcam>(null);

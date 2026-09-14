@@ -3,14 +3,15 @@ import { Fact } from '@alcatraz/contracts';
 import { AIProvider, ExtractedText } from '../pipeline.js';
 import { v4 as uuidv4 } from 'uuid';
 
-// Suppress local file warnings for WebGPU
+// Important for browser environments so it doesn't look for local node file system
 env.allowLocalModels = false;
 env.useBrowserCache = true;
 
 export class TransformersProvider implements AIProvider {
-  name = 'Transformers.js NER';
+  name = 'Transformers.js (Local NER & Classification)';
   isCloud = false;
   private modelPipeline: any = null;
+  private classifierPipeline: any = null;
   private initializing = false;
 
   private async getPipeline() {
@@ -111,5 +112,26 @@ export class TransformersProvider implements AIProvider {
         excerpt: `Found ${type} entity: ${value.trim()}`
       }
     });
+  }
+
+  private async getClassifier() {
+    if (this.classifierPipeline) return this.classifierPipeline;
+    console.log('Loading local DistilBERT phishing model...');
+    this.classifierPipeline = await pipeline('text-classification', 'onnx-community/phishing-email-detection-distilbert_v2.4.1-ONNX', {
+      quantized: true,
+    });
+    console.log('Phishing classifier loaded successfully.');
+    return this.classifierPipeline;
+  }
+
+  async detectPhishing(text: string): Promise<{ label: string, score: number }> {
+    try {
+      const classifier = await this.getClassifier();
+      const results = await classifier(text);
+      return results[0]; // { label: 'phishing' | 'safe', score: 0.99 }
+    } catch (e) {
+      console.error('Classification error:', e);
+      return { label: 'error', score: 0 };
+    }
   }
 }

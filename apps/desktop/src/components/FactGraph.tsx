@@ -4,7 +4,7 @@ import ForceGraph3D from 'react-force-graph-3d';
 import * as THREE from 'three';
 
 export function FactGraph({ facts, findings }: { facts: Fact[], findings: Finding[] }) {
-  const fgRef = useRef<any>();
+  const fgRef = useRef<any>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const containerRef = useRef<HTMLDivElement>(null);
 
