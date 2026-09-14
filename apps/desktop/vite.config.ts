@@ -8,7 +8,14 @@ export default defineConfig(async () => ({
   plugins: [
     react(), 
     tailwindcss(),
-    VitePWA({ registerType: 'autoUpdate', devOptions: { enabled: true } })
+    VitePWA({ 
+      registerType: 'autoUpdate', 
+      devOptions: { enabled: true },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,wasm,onnx}'],
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024 // 10 MiB limit
+      }
+    })
   ],
   clearScreen: false,
   server: {
