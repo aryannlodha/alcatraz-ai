@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Finding, Fact } from '@alcatraz/contracts';
-import { FileText, AlertTriangle, CheckCircle, Info, Download } from 'lucide-react';
+import { FileText, AlertTriangle, CheckCircle, Info, Download, Volume2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -22,6 +22,30 @@ function severityColor(s: string): string {
 
 export function ExportButton({ scenario, facts, findings }: { scenario: string; facts: Fact[]; findings: Finding[] }) {
   const [isExporting, setIsExporting] = React.useState(false);
+  const [isPlaying, setIsPlaying] = React.useState(false);
+
+  const handleReadAloud = () => {
+    if (isPlaying) {
+      window.speechSynthesis.cancel();
+      setIsPlaying(false);
+      return;
+    }
+    
+    setIsPlaying(true);
+    let text = `Verification report for ${scenario}. `;
+    if (findings.length === 0) {
+      text += "No inconsistencies detected. All facts match.";
+    } else {
+      text += `${findings.length} findings detected. `;
+      findings.forEach((f, i) => {
+        text += `Finding ${i + 1}: ${f.type.replace('_', ' ')}. ${f.explanation}. `;
+      });
+    }
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.onend = () => setIsPlaying(false);
+    window.speechSynthesis.speak(utterance);
+  };
 
   const handleExport = async () => {
     setIsExporting(true);
@@ -119,12 +143,20 @@ export function ExportButton({ scenario, facts, findings }: { scenario: string; 
   };
 
   return (
-    <button
-      onClick={handleExport}
-      disabled={isExporting}
-      className="flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-white dark:text-gray-900 text-white text-sm font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors disabled:opacity-50"
-    >
-      <Download size={16} /> {isExporting ? 'Generating PDF...' : 'Export PDF Report'}
-    </button>
+    <div className="flex gap-2">
+      <button
+        onClick={handleReadAloud}
+        className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 dark:text-gray-200 text-gray-800 text-sm font-semibold rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+      >
+        <Volume2 size={16} /> {isPlaying ? 'Stop Reading' : 'Read Aloud'}
+      </button>
+      <button
+        onClick={handleExport}
+        disabled={isExporting}
+        className="flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-white dark:text-gray-900 text-white text-sm font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors disabled:opacity-50"
+      >
+        <Download size={16} /> {isExporting ? 'Generating PDF...' : 'Export PDF Report'}
+      </button>
+    </div>
   );
 }

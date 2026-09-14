@@ -1,5 +1,5 @@
 import { Source, Fact, Finding } from '@alcatraz/contracts';
-import { runEngine } from '@alcatraz/reasoning';
+import { runEngine, emitLog } from '@alcatraz/reasoning';
 import { createWorker } from 'tesseract.js';
 import * as pdfjsLib from 'pdfjs-dist';
 
@@ -27,17 +27,23 @@ export class AnalysisPipeline {
     const allFacts: Fact[] = [];
     
     for (const source of sources) {
+      emitLog(`[Pipeline] Intake Source: ${source.name} (${source.type})`);
       console.log(`Extracting text from ${source.name}...`);
       const extractedText = await this.extractText(source);
+      emitLog(`[Pipeline] OCR / Extraction Complete. Confidence: ${extractedText.confidence.toFixed(2)}`);
       
       console.log(`Extracting structured facts via AI...`);
+      emitLog(`[Pipeline] Running ${this.aiProvider.name} on extracted text...`);
       const facts = await this.aiProvider.extractFacts(extractedText);
+      emitLog(`[Pipeline] Fact Extraction complete. Found ${facts.length} facts.`);
       allFacts.push(...facts);
     }
     
     // Phase 8: Cross-checking execution
     console.log('Running Deterministic Reasoning Engine on extracted facts...');
+    emitLog(`[Pipeline] Handing over ${allFacts.length} total facts to Deterministic Engine...`);
     const findings = runEngine(allFacts);
+    emitLog(`[Pipeline] Analysis Complete. ${findings.length} findings generated.`);
     
     return {
       facts: allFacts,

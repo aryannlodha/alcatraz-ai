@@ -1,5 +1,6 @@
 import { Fact, Finding, FindingType, Severity } from '@alcatraz/contracts';
 import { normalizeYear, normalizeAccount, normalizeDomain, normalizeNumber, normalizeName } from './normalizers.js';
+import { emitLog } from './logger.js';
 import { compareExact, compareAccount, compareFuzzy, ComparisonResult } from './comparators.js';
 
 export interface Rule {
@@ -280,7 +281,9 @@ export const emailRules: Rule[] = [
 ];
 
 export function runEngine(facts: Fact[]): Finding[] {
+  emitLog(`[Engine] Initializing rules engine with ${facts.length} facts.`);
   const allRules = [...applicationRules, ...paymentRules, ...emailRules];
+  emitLog(`[Engine] Loaded ${allRules.length} total deterministic rules.`);
   const findings: Finding[] = [];
   
   for (const rule of allRules) {

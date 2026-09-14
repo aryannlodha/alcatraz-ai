@@ -7,6 +7,7 @@ import { Fact, Finding } from '@alcatraz/contracts';
 import { CheckCircle } from 'lucide-react';
 // @ts-ignore
 import { demo1ApplicationFacts, demo2PaymentFacts, demo3PhishingFacts } from '../demo/synthetic_data';
+import { CameraScanner } from './CameraScanner';
 
 export function AnalyzeScreen({ scenario, isCloud }: { scenario: string, isCloud: boolean }) {
   const [state, setState] = useState<AnalysisState>('idle');
@@ -44,6 +45,13 @@ export function AnalyzeScreen({ scenario, isCloud }: { scenario: string, isCloud
 
   }, [scenario]);
 
+  const startAnalysis = async (img: string, type: string) => {
+    setState('sources_selected');
+    setFindings([]);
+    // Setup real pipeline call here if needed
+    setTimeout(() => setState('complete'), 3000);
+  };
+
   const activeFindings = findings.filter(f => !dismissedIds.has(f.id));
 
   return (
@@ -55,11 +63,15 @@ export function AnalyzeScreen({ scenario, isCloud }: { scenario: string, isCloud
             {isCloud ? 'Cloud Processing' : 'Local / On-Device (Privacy Safe)'}
           </span>
         </div>
-        {scenario !== 'blank' && (
+        {scenario === 'camera' ? (
+          <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider rounded-full">
+            Camera Capture
+          </span>
+        ) : scenario !== 'blank' ? (
           <span className="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-bold uppercase tracking-wider rounded-full">
             Synthetic Demo Data
           </span>
-        )}
+        ) : null}
       </div>
 
       {scenario === 'blank' ? (
@@ -68,6 +80,10 @@ export function AnalyzeScreen({ scenario, isCloud }: { scenario: string, isCloud
           title="No Analysis Running" 
           description="Select an option from the dashboard to begin cross-checking your sources." 
         />
+      ) : scenario === 'camera' && state === 'idle' ? (
+        <div className="max-w-xl mx-auto">
+          <CameraScanner onCapture={(img) => startAnalysis(img, 'image')} />
+        </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1">

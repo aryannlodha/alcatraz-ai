@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
-import { Shield, LayoutDashboard, Camera, Upload, Clipboard, Settings, Activity, Cloud, Sun, Moon, BookOpen, History, Lock } from 'lucide-react';
+import { Shield, LayoutDashboard, Camera, Upload, Clipboard, Settings, Activity, Cloud, Sun, Moon, BookOpen, History, Lock, TerminalSquare } from 'lucide-react';
 import { TourGuide } from './TourGuide';
+import { DeveloperConsole } from './DeveloperConsole';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -12,6 +13,7 @@ interface AppShellProps {
 
 export function AppShell({ children, activeTab, onNavigate, isCloudActive }: AppShellProps) {
   const [isDark, setIsDark] = useState(false);
+  const [isDevConsoleOpen, setIsDevConsoleOpen] = useState(false);
 
   useEffect(() => {
     const isDarkStored = localStorage.getItem('alcatraz-theme') === 'dark';
@@ -66,8 +68,11 @@ export function AppShell({ children, activeTab, onNavigate, isCloudActive }: App
           <NavItem active={activeTab === 'settings'} onClick={() => onNavigate('settings')} icon={<Settings size={18} />} label="Settings" />
         </nav>
 
-        <div className="p-4 border-t border-gray-200 dark:border-gray-800">
-          <button onClick={toggleTheme} className="w-full mb-3 flex items-center justify-between p-2 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100">
+        <div className="p-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
+          <button onClick={() => setIsDevConsoleOpen(true)} className="w-full flex items-center justify-between p-2 rounded-lg bg-gray-900 text-green-400 hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-green-400">
+            <span className="text-sm font-medium flex items-center gap-2"><TerminalSquare size={16} /> Dev Console</span>
+          </button>
+          <button onClick={toggleTheme} className="w-full flex items-center justify-between p-2 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100">
             <span className="text-sm font-medium">Theme</span>
             {isDark ? <Sun size={16} /> : <Moon size={16} />}
           </button>
@@ -86,6 +91,7 @@ export function AppShell({ children, activeTab, onNavigate, isCloudActive }: App
       <main className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-950 transition-colors">
         {children}
       </main>
+      <DeveloperConsole isOpen={isDevConsoleOpen} onClose={() => setIsDevConsoleOpen(false)} />
     </div>
   );
 }
