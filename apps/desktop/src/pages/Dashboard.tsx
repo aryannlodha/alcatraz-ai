@@ -4,8 +4,16 @@ import { SeverityBadge } from '../components/Badges/SeverityBadge';
 
 export function DashboardPage({ onNavigate }: { onNavigate: (tab: string) => void }) {
   return (
-    <div className="p-8 max-w-5xl mx-auto animate-in fade-in duration-300">
-      <h1 className="text-2xl font-bold mb-6">What do you want to verify?</h1>
+    <div className="p-8 max-w-5xl mx-auto animate-in fade-in duration-300 tech-grid-bg min-h-[80vh] rounded-2xl relative">
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white dark:to-gray-950 pointer-events-none rounded-2xl"></div>
+      
+      <div className="relative z-10">
+        <h1 className="text-3xl font-extrabold mb-2 tracking-tight text-gray-900 dark:text-white">
+          Alcatraz Verification Command
+        </h1>
+        <p className="text-gray-500 dark:text-gray-400 mb-8 font-medium">
+          Select a verification module to begin on-device analysis.
+        </p>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         <ActionCard icon={<Camera size={24} />} title="Analyze Screen" description="Select a region of your screen to cross-check." onClick={() => onNavigate('analyze')} />
@@ -22,6 +30,7 @@ export function DashboardPage({ onNavigate }: { onNavigate: (tab: string) => voi
         <DemoCard severity="high_risk" title="Application Consistency" description="Resume vs Application vs Job Requirement" onRun={() => onNavigate('demo1')} />
         <DemoCard severity="warning" title="Invoice / Payment Verification" description="Invoice PDF vs Payment Screen" onRun={() => onNavigate('demo2')} />
         <DemoCard severity="review" title="Email / Website Risk" description="Suspicious Email vs Claimed Domain" onRun={() => onNavigate('demo3')} />
+        </div>
       </div>
     </div>
   );
