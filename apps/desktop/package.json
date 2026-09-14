@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "cd ../../packages/contracts && pnpm exec tsc && cd ../reasoning && pnpm exec tsc && cd ../../apps/desktop && tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri"
   },
