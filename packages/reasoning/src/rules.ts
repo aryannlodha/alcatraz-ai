@@ -80,6 +80,62 @@ export const applicationRules: Rule[] = [
       }
       return null;
     }
+  },
+  {
+    id: 'app_name_consistency',
+    scenario: 'application',
+    evaluate: (facts) => {
+      const nameFacts = facts.filter(f => f.attribute === 'person_name');
+      if (nameFacts.length < 2) return null;
+      
+      const val1 = normalizeName(String(nameFacts[0].value));
+      const val2 = normalizeName(String(nameFacts[1].value));
+      
+      if (compareFuzzy(val1, val2) === 'mismatch') {
+        return generateFinding(
+          'app_name_consistency',
+          'application',
+          'mismatch',
+          'warning',
+          `The applicant name in ${nameFacts[0].sourceId} does not match the name in ${nameFacts[1].sourceId}.`,
+          [nameFacts[0].id, nameFacts[1].id]
+        );
+      }
+      return null;
+    }
+  },
+  {
+    id: 'app_skills_match',
+    scenario: 'application',
+    evaluate: (facts) => {
+      const reqSkills = facts.filter(f => f.attribute === 'required_skills');
+      const listedSkills = facts.filter(f => f.attribute === 'listed_skills');
+      if (reqSkills.length === 0 || listedSkills.length === 0) return null;
+
+      const reqVal = String(reqSkills[0].value).toLowerCase();
+      const listedVal = String(listedSkills[0].value).toLowerCase();
+
+      const reqWords = reqVal.split(/[,\s]+/).filter(w => w.length > 2);
+      let overlap = false;
+      for (const w of reqWords) {
+        if (listedVal.includes(w)) {
+          overlap = true;
+          break;
+        }
+      }
+
+      if (!overlap && reqWords.length > 0) {
+         return generateFinding(
+           'app_skills_match',
+           'application',
+           'mismatch',
+           'review',
+           `The listed skills do not appear to overlap with the required skills.`,
+           [reqSkills[0].id, listedSkills[0].id]
+         );
+      }
+      return null;
+    }
   }
 ];
 
@@ -91,7 +147,6 @@ export const paymentRules: Rule[] = [
       const accFacts = facts.filter(f => f.attribute === 'account_number');
       if (accFacts.length < 2) return null;
       
-      // If either extraction confidence is very low, do not immediately escalate to high_risk fraud
       const lowConfidence = accFacts.some(f => f.confidence < CONFIDENCE_THRESHOLD);
       
       const val1 = normalizeAccount(String(accFacts[0].value));
@@ -107,6 +162,52 @@ export const paymentRules: Rule[] = [
           lowConfidence ? 'warning' : 'high_risk',
           `The payment destination account (${val2}) differs from the account specified on the invoice (${val1}).`,
           [accFacts[0].id, accFacts[1].id]
+        );
+      }
+      return null;
+    }
+  },
+  {
+    id: 'payment_amount_mismatch',
+    scenario: 'payment',
+    evaluate: (facts) => {
+      const amtFacts = facts.filter(f => f.attribute === 'amount');
+      if (amtFacts.length < 2) return null;
+      
+      const val1 = normalizeNumber(amtFacts[0].value);
+      const val2 = normalizeNumber(amtFacts[1].value);
+      
+      if (compareExact(val1, val2) === 'mismatch') {
+        return generateFinding(
+          'payment_amount_mismatch',
+          'payment',
+          'mismatch',
+          'high_risk',
+          `The payment amount (${val1}) differs across sources.`,
+          [amtFacts[0].id, amtFacts[1].id]
+        );
+      }
+      return null;
+    }
+  },
+  {
+    id: 'payment_vendor_name_mismatch',
+    scenario: 'payment',
+    evaluate: (facts) => {
+      const vendorFacts = facts.filter(f => f.attribute === 'vendor_name');
+      if (vendorFacts.length < 2) return null;
+      
+      const val1 = normalizeName(String(vendorFacts[0].value));
+      const val2 = normalizeName(String(vendorFacts[1].value));
+      
+      if (compareFuzzy(val1, val2) === 'mismatch') {
+        return generateFinding(
+          'payment_vendor_name_mismatch',
+          'payment',
+          'mismatch',
+          'warning',
+          `The vendor name differs across sources.`,
+          [vendorFacts[0].id, vendorFacts[1].id]
         );
       }
       return null;
@@ -136,6 +237,42 @@ export const emailRules: Rule[] = [
           `Sender domain (${senderDomain}) does not match the claimed organization domain (${claimedDomain}). Potential phishing risk.`,
           [senderFacts[0].id, claimFacts[0].id]
         );
+      }
+      return null;
+    }
+  },
+  {
+    id: 'email_urgency_flag',
+    scenario: 'email',
+    evaluate: (facts) => {
+      const urgencyFacts = facts.filter(f => f.attribute === 'urgency' && String(f.value) === 'true');
+      if (urgencyFacts.length > 0) {
+         return generateFinding(
+           'email_urgency_flag',
+           'email',
+           'match',
+           'information',
+           `Email contains urgency language.`,
+           [urgencyFacts[0].id]
+         );
+      }
+      return null;
+    }
+  },
+  {
+    id: 'email_credential_request',
+    scenario: 'email',
+    evaluate: (facts) => {
+      const credFacts = facts.filter(f => f.attribute === 'credential_request' && String(f.value) === 'true');
+      if (credFacts.length > 0) {
+         return generateFinding(
+           'email_credential_request',
+           'email',
+           'match',
+           'warning',
+           `Email contains request for credentials or sensitive info.`,
+           [credFacts[0].id]
+         );
       }
       return null;
     }
