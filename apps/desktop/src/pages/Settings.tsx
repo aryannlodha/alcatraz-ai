@@ -71,6 +71,25 @@ export function SettingsPage({ isCloud, setIsCloud }: { isCloud: boolean, setIsC
             <span>Strict</span>
           </div>
         </div>
+
+        {/* Panic Button */}
+        <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 rounded-xl p-6">
+          <h2 className="text-lg font-bold text-red-700 dark:text-red-500 mb-2">Danger Zone</h2>
+          <p className="text-sm text-red-600/80 dark:text-red-400/80 mb-6">Instantly purge all local storage, indexedDB, and cache. This action cannot be undone.</p>
+          
+          <button 
+            onClick={() => {
+              if (window.confirm('Are you sure? This will wipe all local data.')) {
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.reload();
+              }
+            }}
+            className="w-full sm:w-auto px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg shadow-sm transition-colors flex items-center justify-center gap-2"
+          >
+            Execute Secure Wipe
+          </button>
+        </div>
       </div>
     </div>
   );

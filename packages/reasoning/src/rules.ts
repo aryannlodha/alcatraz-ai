@@ -1,6 +1,7 @@
 import { Fact, Finding, FindingType, Severity } from '@alcatraz/contracts';
 import { normalizeYear, normalizeAccount, normalizeDomain, normalizeNumber, normalizeName } from './normalizers.js';
 import { emitLog } from './logger.js';
+import { isKnownPhishing } from './bloomFilter.js';
 import { compareExact, compareAccount, compareFuzzy, ComparisonResult } from './comparators.js';
 
 export interface Rule {
@@ -264,16 +265,37 @@ export const emailRules: Rule[] = [
     id: 'email_credential_request',
     scenario: 'email',
     evaluate: (facts) => {
-      const credFacts = facts.filter(f => f.attribute === 'credential_request' && String(f.value) === 'true');
+      const credFacts = facts.filter(f => f.attribute === 'credential_request' && f.value === 'true');
       if (credFacts.length > 0) {
-         return generateFinding(
-           'email_credential_request',
-           'email',
-           'match',
-           'warning',
-           `Email contains request for credentials or sensitive info.`,
-           [credFacts[0].id]
-         );
+        return generateFinding(
+          'email_credential_request',
+          'email',
+          'match',
+          'warning',
+          `A message is requesting highly sensitive credentials (like SSN, password, or credit card). This is a strong phishing indicator.`,
+          credFacts.map(f => f.id)
+        );
+      }
+      return null;
+    }
+  },
+  {
+    id: 'bloom_filter_phishing',
+    scenario: 'email',
+    evaluate: (facts) => {
+      const domainFacts = facts.filter(f => f.attribute === 'claimed_domain' || f.attribute === 'sender_domain');
+      for (const fact of domainFacts) {
+        const norm = normalizeDomain(String(fact.value));
+        if (norm && isKnownPhishing(norm)) {
+          return generateFinding(
+            'bloom_filter_phishing',
+            'email',
+            'mismatch',
+            'high_risk',
+            `The domain ${norm} was found in the local offline Bloom Filter of known malicious phishing sites.`,
+            [fact.id]
+          );
+        }
       }
       return null;
     }

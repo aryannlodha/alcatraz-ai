@@ -15,6 +15,8 @@ import { ToastProvider } from './components/Toast';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { KeyboardShortcutsHelp } from './components/KeyboardShortcutsHelp';
 import { Activity } from 'lucide-react';
+import { AppLock } from './components/AppLock';
+import { AudioScanner } from './pages/AudioScanner';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -31,6 +33,7 @@ export default function App() {
       case 'demo3': return <AnalyzeScreen scenario="demo3" isCloud={isCloud} />;
       case 'upload': return <UploadScreen onAnalyze={() => setActiveTab('analyze')} />;
       case 'paste': return <PasteScreen onAnalyze={() => setActiveTab('analyze')} />;
+      case 'audio': return <AudioScanner />;
       case 'how-it-works': return <HowItWorksPage />;
       case 'history': return <HistoryPage />;
       case 'privacy': return <PrivacyPolicyPage />;
@@ -52,9 +55,11 @@ export default function App() {
     <ToastProvider>
       {showOnboarding && <Onboarding onComplete={completeOnboarding} />}
       {isHelpOpen && <KeyboardShortcutsHelp isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />}
-      <AppShell activeTab={activeTab} onNavigate={setActiveTab} isCloudActive={isCloud}>
-        {renderContent()}
-      </AppShell>
+      <AppLock>
+        <AppShell activeTab={activeTab} onNavigate={setActiveTab} isCloudActive={isCloud}>
+          {renderContent()}
+        </AppShell>
+      </AppLock>
     </ToastProvider>
   );
 }

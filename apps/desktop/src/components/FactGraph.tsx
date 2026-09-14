@@ -1,132 +1,106 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Fact } from '@alcatraz/contracts';
+import React, { useRef, useEffect, useState } from 'react';
+import { Fact, Finding } from '@alcatraz/contracts';
+import ForceGraph3D from 'react-force-graph-3d';
+import * as THREE from 'three';
 
-interface FactNode {
-  fact: Fact;
-  x: number;
-  y: number;
-}
-
-interface Connection {
-  from: number;
-  to: number;
-  type: 'match' | 'mismatch' | 'possible_match' | 'neutral';
-}
-
-function getColor(type: string): string {
-  switch (type) {
-    case 'match': return '#22c55e';
-    case 'mismatch': return '#ef4444';
-    case 'possible_match': return '#f59e0b';
-    default: return '#d1d5db';
-  }
-}
-
-export function FactGraph({ facts, findingFactIds }: { facts: Fact[]; findingFactIds: Set<string> }) {
+export function FactGraph({ facts, findings }: { facts: Fact[], findings: Finding[] }) {
+  const fgRef = useRef<any>();
+  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const containerRef = useRef<HTMLDivElement>(null);
-  const [nodes, setNodes] = useState<FactNode[]>([]);
-  const [connections, setConnections] = useState<Connection[]>([]);
 
   useEffect(() => {
-    if (facts.length === 0) return;
+    if (containerRef.current) {
+      setDimensions({
+        width: containerRef.current.clientWidth,
+        height: 500
+      });
+    }
+  }, []);
 
-    // Layout facts in a circular pattern
-    const centerX = 300;
-    const centerY = 200;
-    const radius = Math.min(160, facts.length * 30);
+  const data = React.useMemo(() => {
+    const nodes: any[] = [];
+    const links: any[] = [];
     
-    const layoutNodes = facts.map((fact, i) => ({
-      fact,
-      x: centerX + radius * Math.cos((2 * Math.PI * i) / facts.length - Math.PI / 2),
-      y: centerY + radius * Math.sin((2 * Math.PI * i) / facts.length - Math.PI / 2),
-    }));
+    // Group facts by entity
+    const entities = new Set(facts.map(f => f.entity));
+    
+    // Add entity center nodes
+    entities.forEach(entity => {
+      nodes.push({
+        id: `entity_${entity}`,
+        name: entity,
+        val: 20,
+        color: '#4f46e5',
+        type: 'entity'
+      });
+    });
 
-    setNodes(layoutNodes);
+    // Add facts and link to entities
+    facts.forEach(fact => {
+      nodes.push({
+        id: fact.id,
+        name: `${fact.attribute}: ${fact.value}`,
+        val: 10,
+        color: '#10b981',
+        type: 'fact',
+        sourceId: fact.sourceId
+      });
+      links.push({
+        source: fact.id,
+        target: `entity_${fact.entity}`,
+        color: '#9ca3af'
+      });
+    });
 
-    // Connect facts that share the same attribute
-    const conns: Connection[] = [];
-    for (let i = 0; i < facts.length; i++) {
-      for (let j = i + 1; j < facts.length; j++) {
-        if (facts[i].attribute === facts[j].attribute) {
-          const bothInFinding = findingFactIds.has(facts[i].id) && findingFactIds.has(facts[j].id);
-          conns.push({
-            from: i,
-            to: j,
-            type: bothInFinding ? 'mismatch' : facts[i].value === facts[j].value ? 'match' : 'neutral',
-          });
+    // Add contradictions based on findings
+    findings.forEach(finding => {
+      if (finding.factIds.length >= 2) {
+        for (let i = 0; i < finding.factIds.length; i++) {
+          for (let j = i + 1; j < finding.factIds.length; j++) {
+            links.push({
+              source: finding.factIds[i],
+              target: finding.factIds[j],
+              color: '#ef4444', // Red for contradiction
+              width: 3
+            });
+          }
         }
       }
-    }
-    setConnections(conns);
-  }, [facts, findingFactIds]);
+    });
 
-  if (facts.length === 0) return null;
+    return { nodes, links };
+  }, [facts, findings]);
 
   return (
-    <div ref={containerRef} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-6">
-      <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 uppercase tracking-wider">Fact Relationship Graph</h3>
-      <svg width="100%" height="400" viewBox="0 0 600 400" className="overflow-visible">
-        {/* Connections */}
-        {connections.map((conn, i) => (
-          <line
-            key={`conn-${i}`}
-            x1={nodes[conn.from]?.x || 0}
-            y1={nodes[conn.from]?.y || 0}
-            x2={nodes[conn.to]?.x || 0}
-            y2={nodes[conn.to]?.y || 0}
-            stroke={getColor(conn.type)}
-            strokeWidth={conn.type === 'mismatch' ? 3 : 1.5}
-            strokeDasharray={conn.type === 'neutral' ? '4,4' : 'none'}
-            opacity={0.7}
-          />
-        ))}
-
-        {/* Nodes */}
-        {nodes.map((node, i) => {
-          const isInFinding = findingFactIds.has(node.fact.id);
-          return (
-            <g key={`node-${i}`}>
-              <circle
-                cx={node.x}
-                cy={node.y}
-                r={isInFinding ? 28 : 22}
-                fill={isInFinding ? '#fef2f2' : '#f9fafb'}
-                stroke={isInFinding ? '#ef4444' : '#d1d5db'}
-                strokeWidth={isInFinding ? 2.5 : 1.5}
-                className="dark:fill-gray-800"
-              />
-              <text
-                x={node.x}
-                y={node.y - 4}
-                textAnchor="middle"
-                className="text-[10px] font-bold fill-gray-700 dark:fill-gray-300"
-              >
-                {node.fact.attribute.replace(/_/g, ' ').slice(0, 12)}
-              </text>
-              <text
-                x={node.x}
-                y={node.y + 8}
-                textAnchor="middle"
-                className="text-[9px] fill-gray-500 dark:fill-gray-400"
-              >
-                {String(node.fact.value).slice(0, 10)}
-              </text>
-            </g>
-          );
-        })}
-      </svg>
-
-      <div className="flex items-center gap-6 mt-4 justify-center">
-        <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-          <div className="w-4 h-0.5 bg-green-500" /> Match
+    <div ref={containerRef} className="w-full bg-gray-950 rounded-xl overflow-hidden border border-gray-800 shadow-xl relative">
+      <div className="absolute top-4 left-4 z-10 bg-gray-900/80 p-3 rounded-lg backdrop-blur-sm border border-gray-700">
+        <h4 className="text-white text-sm font-bold mb-2">3D Semantic Fact Network</h4>
+        <div className="flex items-center gap-2 text-xs text-gray-300">
+          <div className="w-3 h-3 rounded-full bg-blue-600"></div> Entity Root
         </div>
-        <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-          <div className="w-4 h-0.5 bg-red-500" style={{ height: 3 }} /> Mismatch
+        <div className="flex items-center gap-2 text-xs text-gray-300 mt-1">
+          <div className="w-3 h-3 rounded-full bg-green-500"></div> Fact Node
         </div>
-        <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-          <div className="w-4 h-0.5 bg-gray-300 border-t border-dashed border-gray-400" /> Unrelated
+        <div className="flex items-center gap-2 text-xs text-gray-300 mt-1">
+          <div className="w-3 h-0.5 bg-red-500"></div> Contradiction Link
         </div>
       </div>
+      <ForceGraph3D
+        ref={fgRef}
+        graphData={data}
+        width={dimensions.width}
+        height={dimensions.height}
+        backgroundColor="#030712"
+        nodeLabel="name"
+        nodeColor="color"
+        nodeRelSize={6}
+        linkColor="color"
+        linkWidth={link => link.width || 1}
+        nodeResolution={16}
+        enableNodeDrag={false}
+        enableNavigationControls={true}
+        showNavInfo={false}
+      />
     </div>
   );
 }

@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Alcatraz AI Verification",
+  "version": "1.0.0",
+  "description": "On-device AI document and email verification.",
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Open Alcatraz AI"
+  },
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "icons": {
+    "16": "vite.svg"
+  }
+}

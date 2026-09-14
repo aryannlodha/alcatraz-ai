@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Camera, Upload, Clipboard, PlayCircle } from 'lucide-react';
+import { Camera, Upload, Clipboard, PlayCircle, FileText, AlertTriangle, Play, CheckCircle, Mic } from 'lucide-react';
 import { SeverityBadge } from '../components/Badges/SeverityBadge';
 
 export function DashboardPage({ onNavigate }: { onNavigate: (tab: string) => void }) {
@@ -8,8 +7,9 @@ export function DashboardPage({ onNavigate }: { onNavigate: (tab: string) => voi
     <div className="p-8 max-w-5xl mx-auto animate-in fade-in duration-300">
       <h1 className="text-2xl font-bold mb-6">What do you want to verify?</h1>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         <ActionCard icon={<Camera size={24} />} title="Analyze Screen" description="Select a region of your screen to cross-check." onClick={() => onNavigate('analyze')} />
+        <ActionCard icon={<Mic size={24} />} title="Verify Audio" description="Local Whisper Transcription" onClick={() => onNavigate('audio')} />
         <ActionCard icon={<Upload size={24} />} title="Upload Documents" description="Compare PDFs, images, and files." onClick={() => onNavigate('upload')} />
         <ActionCard icon={<Clipboard size={24} />} title="Paste Information" description="Verify copied text and links." onClick={() => onNavigate('paste')} />
       </div>

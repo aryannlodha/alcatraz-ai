@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "cd ../../packages/contracts && pnpm exec tsc && cd ../reasoning && pnpm exec tsc && cd ../../apps/desktop && tsc && vite build",
+    "build:extension": "pnpm run build && copy public\\manifest.chrome.json dist\\manifest.json",
     "preview": "vite preview",
     "tauri": "tauri"
   },
@@ -25,11 +26,13 @@
     "lucide-react": "^1.45.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-force-graph-3d": "^1.29.1",
     "react-i18next": "^17.0.14",
     "react-webcam": "^7.2.0",
     "recharts": "^3.10.1",
     "tailwind-merge": "^3.6.0",
-    "tailwindcss": "^4.3.3"
+    "tailwindcss": "^4.3.3",
+    "three": "^0.186.0"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2",
