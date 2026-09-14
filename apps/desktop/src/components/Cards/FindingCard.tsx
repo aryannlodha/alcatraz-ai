@@ -2,6 +2,7 @@ import React from 'react';
 import { SeverityBadge } from '../Badges/SeverityBadge';
 import { Finding, Fact } from '@alcatraz/contracts';
 import { X, Search, FileText } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export function FindingCard({ 
   finding, 
@@ -15,7 +16,13 @@ export function FindingCard({
   const relevantFacts = facts.filter(f => finding.factIds.includes(f.id));
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4 animate-in fade-in slide-in-from-bottom-2">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, x: -100 }}
+      layout
+      className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-4"
+    >
       <div className="p-5 border-b border-gray-100 bg-gray-50 flex justify-between items-start">
         <div className="flex items-center gap-3">
           <SeverityBadge severity={finding.severity} />
@@ -67,6 +74,6 @@ export function FindingCard({
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
