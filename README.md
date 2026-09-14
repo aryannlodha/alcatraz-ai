@@ -5,7 +5,7 @@
   
   **The 100% Local, Privacy-First Verification Layer for the AI Era.**
 
-  [![Vercel Deployment](https://img.shields.io/badge/Deployed-Vercel-black?logo=vercel)](https://alcatraz-ai-desktop.vercel.app)
+  [![Vercel Deployment](https://img.shields.io/badge/Deployed-Vercel-black?logo=vercel)](https://alcatraz-ai.vercel.app/)
   [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Web%20%7C%20Extension-blue)](#)
   [![License](https://img.shields.io/badge/License-MIT-green)](#)
   
