@@ -6,7 +6,7 @@ import { runEngine } from '@alcatraz/reasoning';
 import { Fact, Finding } from '@alcatraz/contracts';
 import { CheckCircle } from 'lucide-react';
 // @ts-ignore
-import { demo1ApplicationFacts, demo2PaymentFacts, demo3PhishingFacts } from '../../../../demo/synthetic_data.ts';
+import { demo1ApplicationFacts, demo2PaymentFacts, demo3PhishingFacts } from '../demo/synthetic_data';
 
 export function AnalyzeScreen({ scenario, isCloud }: { scenario: string, isCloud: boolean }) {
   const [state, setState] = useState<AnalysisState>('idle');
