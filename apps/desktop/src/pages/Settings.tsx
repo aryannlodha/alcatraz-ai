@@ -1,10 +1,26 @@
 import React from 'react';
-import { Settings as SettingsIcon, Cloud, HardDrive, Shield } from 'lucide-react';
+import { Settings as SettingsIcon, Cloud, HardDrive, Shield, Key } from 'lucide-react';
 
 export function SettingsPage({ isCloud, setIsCloud }: { isCloud: boolean, setIsCloud: (v: boolean) => void }) {
   const [strictness, setStrictness] = React.useState(() => {
     return parseInt(localStorage.getItem('alcatraz-strictness') || '1', 10);
   });
+  const [groqApiKey, setGroqApiKey] = React.useState(() => {
+    return localStorage.getItem('GROQ_API_KEY') || '';
+  });
+  const [isGroqSaved, setIsGroqSaved] = React.useState(() => {
+    return !!localStorage.getItem('GROQ_API_KEY');
+  });
+
+  const handleSaveGroqKey = () => {
+    if (groqApiKey.trim()) {
+      localStorage.setItem('GROQ_API_KEY', groqApiKey.trim());
+      setIsGroqSaved(true);
+    } else {
+      localStorage.removeItem('GROQ_API_KEY');
+      setIsGroqSaved(false);
+    }
+  };
 
   const handleStrictnessChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = parseInt(e.target.value, 10);
@@ -69,6 +85,37 @@ export function SettingsPage({ isCloud, setIsCloud }: { isCloud: boolean, setIsC
             <span>Lenient</span>
             <span>Balanced</span>
             <span>Strict</span>
+          </div>
+        </div>
+
+        {/* Groq API Key */}
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-3">
+              <Key size={20} className="text-gray-900 dark:text-white" />
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Groq API Key</h2>
+            </div>
+            {isGroqSaved ? (
+              <span className="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded-full">Connected</span>
+            ) : (
+              <span className="px-2 py-1 text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 rounded-full">Not Configured</span>
+            )}
+          </div>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Enter your Groq API key for cloud fallback LLM capabilities.</p>
+          <div className="flex gap-3">
+            <input
+              type="password"
+              value={groqApiKey}
+              onChange={(e) => setGroqApiKey(e.target.value)}
+              placeholder="gsk_..."
+              className="flex-1 px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white dark:text-white"
+            />
+            <button
+              onClick={handleSaveGroqKey}
+              className="px-6 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold rounded-lg shadow-sm hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
+            >
+              Save Key
+            </button>
           </div>
         </div>
 

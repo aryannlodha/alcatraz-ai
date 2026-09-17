@@ -8,6 +8,7 @@ import { HistoryPage } from './pages/HistoryPage';
 import React, { useState } from 'react';
 import { AppShell } from './components/AppShell';
 import { DashboardPage } from './pages/Dashboard';
+import { ThreatDashboard } from './pages/ThreatDashboard';
 import { SettingsPage } from './pages/Settings';
 import { EmptyState } from './components/EmptyState';
 import { Onboarding, useOnboarding } from './components/Onboarding';
@@ -17,16 +18,19 @@ import { KeyboardShortcutsHelp } from './components/KeyboardShortcutsHelp';
 import { Activity } from 'lucide-react';
 import { AppLock } from './components/AppLock';
 import { AudioScanner } from './pages/AudioScanner';
+import { LandingHero } from './pages/LandingHero';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('landing');
   const [isCloud, setIsCloud] = useState(false);
   const { showOnboarding, completeOnboarding } = useOnboarding();
   const { isHelpOpen, setIsHelpOpen } = useKeyboardShortcuts(setActiveTab);
 
   const renderContent = () => {
     switch (activeTab) {
+      case 'landing': return <LandingHero onNavigate={setActiveTab} />;
       case 'dashboard': return <DashboardPage onNavigate={setActiveTab} />;
+      case 'threat-dashboard': return <ThreatDashboard />;
       case 'analyze': return <AnalyzeScreen scenario="blank" isCloud={isCloud} />;
       case 'demo1': return <AnalyzeScreen scenario="demo1" isCloud={isCloud} />;
       case 'demo2': return <AnalyzeScreen scenario="demo2" isCloud={isCloud} />;

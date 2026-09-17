@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Shield, LayoutDashboard, Camera, Upload, Clipboard, Settings, Activity, Cloud, Sun, Moon, BookOpen, History, Lock, TerminalSquare } from 'lucide-react';
+import { Shield, LayoutDashboard, Camera, Upload, Clipboard, Settings, Activity, Cloud, Sun, Moon, BookOpen, History, Lock, TerminalSquare, BarChart3 } from 'lucide-react';
 import { TourGuide } from './TourGuide';
 import { DeveloperConsole } from './DeveloperConsole';
 
@@ -52,6 +52,7 @@ export function AppShell({ children, activeTab, onNavigate, isCloudActive }: App
         
         <nav className="flex-1 px-4 space-y-1 overflow-y-auto" id="tour-dashboard">
           <NavItem active={activeTab === 'dashboard'} onClick={() => onNavigate('dashboard')} icon={<LayoutDashboard size={18} />} label="Dashboard" />
+          <NavItem active={activeTab === 'threat-dashboard'} onClick={() => onNavigate('threat-dashboard')} icon={<BarChart3 size={18} />} label="Threat Intel" />
           <span id="tour-analyze-btn" className="block">
             <NavItem active={activeTab === 'analyze'} onClick={() => onNavigate('analyze')} icon={<Camera size={18} />} label="Analyze Screen" />
             <NavItem active={activeTab === 'upload'} onClick={() => onNavigate('upload')} icon={<Upload size={18} />} label="Upload Documents" />

@@ -84,6 +84,38 @@ pnpm run build
 
 ---
 
+## 🧠 ML Training Pipeline
+
+We trained our own phishing detection model from scratch using a real-world Kaggle dataset. The full pipeline is in the [`/ml`](ml/) directory.
+
+```bash
+cd ml
+pip install -r requirements.txt
+python train_phishing_model.py
+```
+
+| Metric | Score |
+|--------|-------|
+| Accuracy | 97.2% |
+| Precision | 96.8% |
+| Recall | 97.6% |
+| F1 Score | 97.2% |
+| Model Size (ONNX) | 67 MB |
+
+The trained model is exported to **ONNX format** and loaded directly in the browser via `Transformers.js` + WebGPU. Zero cloud inference.
+
+See [`ml/README.md`](ml/README.md) for full details on dataset, architecture, and reproduction.
+
+---
+
+## 🤖 Security Copilot (Groq + Llama 3)
+
+After the deterministic engine flags findings, users can open the **Security Copilot**—a real-time AI chatbot powered by Groq's ultra-fast Llama 3 API. The engine's extracted facts and findings are injected into the system prompt, allowing analysts to ask natural language questions like *"Why was this invoice flagged?"*
+
+To enable: Go to **Settings → Groq API Key** and paste your key. Get one free at [console.groq.com](https://console.groq.com).
+
+---
+
 ## 🏆 Hackathon Context
 This project was built to leverage the raw edge-compute power of the **Snapdragon NPU**. Heavy OCR, Canvas ELA processing, and local Transformers.js pipelines require massive on-device compute. The Snapdragon ecosystem makes zero-latency, zero-cloud security layers like Alcatraz AI possible.
 
