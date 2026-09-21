@@ -19,12 +19,19 @@ import { Activity } from 'lucide-react';
 import { AppLock } from './components/AppLock';
 import { AudioScanner } from './pages/AudioScanner';
 import { LandingHero } from './pages/LandingHero';
+import { Source } from '@alcatraz/contracts';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('landing');
   const [isCloud, setIsCloud] = useState(false);
+  const [userSources, setUserSources] = useState<Source[]>([]);
   const { showOnboarding, completeOnboarding } = useOnboarding();
   const { isHelpOpen, setIsHelpOpen } = useKeyboardShortcuts(setActiveTab);
+
+  const handleAnalyzeWithSources = (sources: Source[]) => {
+    setUserSources(sources);
+    setActiveTab('analyze-live');
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -32,11 +39,12 @@ export default function App() {
       case 'dashboard': return <DashboardPage onNavigate={setActiveTab} />;
       case 'threat-dashboard': return <ThreatDashboard />;
       case 'analyze': return <AnalyzeScreen scenario="blank" isCloud={isCloud} />;
+      case 'analyze-live': return <AnalyzeScreen scenario="user" isCloud={isCloud} userSources={userSources} />;
       case 'demo1': return <AnalyzeScreen scenario="demo1" isCloud={isCloud} />;
       case 'demo2': return <AnalyzeScreen scenario="demo2" isCloud={isCloud} />;
       case 'demo3': return <AnalyzeScreen scenario="demo3" isCloud={isCloud} />;
-      case 'upload': return <UploadScreen onAnalyze={() => setActiveTab('analyze')} />;
-      case 'paste': return <PasteScreen onAnalyze={() => setActiveTab('analyze')} />;
+      case 'upload': return <UploadScreen onAnalyze={handleAnalyzeWithSources} />;
+      case 'paste': return <PasteScreen onAnalyze={handleAnalyzeWithSources} />;
       case 'audio': return <AudioScanner />;
       case 'how-it-works': return <HowItWorksPage />;
       case 'history': return <HistoryPage />;
