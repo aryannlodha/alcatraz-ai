@@ -10,6 +10,7 @@ import { demo1ApplicationFacts, demo2PaymentFacts, demo3PhishingFacts } from '..
 import { CameraScanner } from './CameraScanner';
 import { SecurityCopilot } from '../components/SecurityCopilot';
 import { RegexProvider } from '@alcatraz/analysis';
+import confetti from 'canvas-confetti';
 
 export function AnalyzeScreen({ scenario, isCloud, userSources }: { scenario: string, isCloud: boolean, userSources?: Source[] }) {
   const [state, setState] = useState<AnalysisState>('idle');
@@ -53,6 +54,11 @@ export function AnalyzeScreen({ scenario, isCloud, userSources }: { scenario: st
       const generatedFindings = runEngine(demoFacts);
       setFindings(generatedFindings);
       setState('complete');
+      
+      // Celebrate if no findings!
+      if (generatedFindings.length === 0) {
+        confetti({ particleCount: 120, spread: 80, origin: { y: 0.7 } });
+      }
     }, 3200);
 
   }, [scenario, userSources]);
@@ -87,6 +93,11 @@ export function AnalyzeScreen({ scenario, isCloud, userSources }: { scenario: st
       
       // Step 5: Complete
       setState('complete');
+      
+      // Celebrate clean results!
+      if (generatedFindings.length === 0 && allFacts.length > 0) {
+        confetti({ particleCount: 120, spread: 80, origin: { y: 0.7 } });
+      }
       
     } catch (err) {
       console.error('Analysis failed:', err);

@@ -4,6 +4,7 @@ import { AnalyzeScreen } from './pages/AnalyzeScreen';
 import { HowItWorksPage } from './pages/HowItWorksPage';
 import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
 import { HistoryPage } from './pages/HistoryPage';
+import { EmailHeaderAnalyzer } from './pages/EmailHeaderAnalyzer';
 
 import React, { useState } from 'react';
 import { AppShell } from './components/AppShell';
@@ -47,6 +48,7 @@ export default function App() {
       case 'paste': return <PasteScreen onAnalyze={handleAnalyzeWithSources} />;
       case 'audio': return <AudioScanner />;
       case 'how-it-works': return <HowItWorksPage />;
+      case 'email-headers': return <EmailHeaderAnalyzer />;
       case 'history': return <HistoryPage />;
       case 'privacy': return <PrivacyPolicyPage />;
       case 'settings': return <SettingsPage isCloud={isCloud} setIsCloud={setIsCloud} />;

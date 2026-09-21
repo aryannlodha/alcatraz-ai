@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Finding, Fact } from '@alcatraz/contracts';
-import { FileText, AlertTriangle, CheckCircle, Info, Download, Volume2 } from 'lucide-react';
+import { FileText, AlertTriangle, CheckCircle, Info, Download, Volume2, FileJson, FileSpreadsheet } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -142,6 +142,34 @@ export function ExportButton({ scenario, facts, findings }: { scenario: string; 
     }
   };
 
+  const handleExportJSON = () => {
+    const data = JSON.stringify({ scenario, facts, findings, timestamp: new Date().toISOString() }, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `alcatraz-report-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportCSV = () => {
+    const headers = ['Type', 'Severity', 'Explanation'];
+    const rows = findings.map(f => [
+      `"${f.type}"`,
+      `"${f.severity}"`,
+      `"${f.explanation.replace(/"/g, '""')}"`
+    ]);
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `alcatraz-report-${Date.now()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="flex gap-2">
       <button
@@ -149,6 +177,18 @@ export function ExportButton({ scenario, facts, findings }: { scenario: string; 
         className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 dark:text-gray-200 text-gray-800 text-sm font-semibold rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
       >
         <Volume2 size={16} /> {isPlaying ? 'Stop Reading' : 'Read Aloud'}
+      </button>
+      <button
+        onClick={handleExportJSON}
+        className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 dark:text-gray-200 text-gray-800 text-sm font-semibold rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+      >
+        <FileJson size={16} /> Export JSON
+      </button>
+      <button
+        onClick={handleExportCSV}
+        className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 dark:text-gray-200 text-gray-800 text-sm font-semibold rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+      >
+        <FileSpreadsheet size={16} /> Export CSV
       </button>
       <button
         onClick={handleExport}

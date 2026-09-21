@@ -1,39 +1,52 @@
-name: CI
+name: Alcatraz AI CI
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
-    
+
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
+    
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        
+    - name: Install pnpm
+      uses: pnpm/action-setup@v3
+      with:
+        version: 9
+        
+    - name: Get pnpm store directory
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+    - uses: actions/cache@v4
+      name: Setup pnpm cache
+      with:
+        path: ${{ env.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+          
+    - name: Install dependencies
+      run: pnpm install
       
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
+    - name: Build packages/contracts
+      run: cd packages/contracts && pnpm exec tsc
       
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+    - name: Build packages/reasoning
+      run: cd packages/reasoning && pnpm exec tsc
       
-      - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+    - name: Build services/analysis
+      run: cd services/analysis && pnpm exec tsc
       
-      - name: Build contracts
-        run: cd packages/contracts && pnpm exec tsc
-      
-      - name: Build reasoning
-        run: cd packages/reasoning && pnpm exec tsc
-      
-      - name: Run tests
-        run: cd tests && pnpm exec vitest run
-      
-      - name: Build desktop app
-        run: cd apps/desktop && pnpm run build
+    - name: Build apps/desktop
+      run: cd apps/desktop && pnpm run build

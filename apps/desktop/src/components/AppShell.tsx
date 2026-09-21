@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Shield, LayoutDashboard, Camera, Upload, Clipboard, Settings, Activity, Cloud, Sun, Moon, BookOpen, History, Lock, TerminalSquare, BarChart3 } from 'lucide-react';
+import { Shield, LayoutDashboard, Camera, Upload, Clipboard, Settings, Activity, Cloud, Sun, Moon, BookOpen, History, Lock, TerminalSquare, BarChart3, Mail } from 'lucide-react';
 import { TourGuide } from './TourGuide';
 import { DeveloperConsole } from './DeveloperConsole';
 
@@ -57,6 +57,7 @@ export function AppShell({ children, activeTab, onNavigate, isCloudActive }: App
             <NavItem active={activeTab === 'analyze'} onClick={() => onNavigate('analyze')} icon={<Camera size={18} />} label="Analyze Screen" />
             <NavItem active={activeTab === 'upload'} onClick={() => onNavigate('upload')} icon={<Upload size={18} />} label="Upload Documents" />
             <NavItem active={activeTab === 'paste'} onClick={() => onNavigate('paste')} icon={<Clipboard size={18} />} label="Paste Information" />
+            <NavItem active={activeTab === 'email-headers'} onClick={() => onNavigate('email-headers')} icon={<Mail size={18} />} label="Email Headers" />
           </span>
           <div className="h-4" />
           <div className="px-3 py-2 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Insights</div>
