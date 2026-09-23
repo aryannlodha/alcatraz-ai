@@ -20,6 +20,7 @@ import { Activity } from 'lucide-react';
 import { AppLock } from './components/AppLock';
 import { AudioScanner } from './pages/AudioScanner';
 import { LandingHero } from './pages/LandingHero';
+import { UrlScanner } from './pages/UrlScanner';
 import { Source } from '@alcatraz/contracts';
 
 export default function App() {
@@ -49,6 +50,7 @@ export default function App() {
       case 'audio': return <AudioScanner />;
       case 'how-it-works': return <HowItWorksPage />;
       case 'email-headers': return <EmailHeaderAnalyzer />;
+      case 'url-scanner': return <UrlScanner />;
       case 'history': return <HistoryPage />;
       case 'privacy': return <PrivacyPolicyPage />;
       case 'settings': return <SettingsPage isCloud={isCloud} setIsCloud={setIsCloud} />;
